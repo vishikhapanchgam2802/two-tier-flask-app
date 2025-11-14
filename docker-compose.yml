@@ -2,17 +2,18 @@ version: "3.8"
 
 services:
   mysql:
-    user: "${UID}:${GID}" 
     image: mysql:5.7
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'     # IMPORTANT FIX
       MYSQL_DATABASE: devops
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
     volumes:
       - ./mysql-data:/var/lib/mysql
       - ./message.sql:/docker-entrypoint-initdb.d/message.sql  
+      - ./init/create-users.sql:/docker-entrypoint-initdb.d/create-users.sql
     networks:
       - twotier
     healthcheck:
@@ -29,8 +30,8 @@ services:
       - "5000:5000"
     environment:
       MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: admin        # FIXED: previously root
+      MYSQL_PASSWORD: admin    # FIXED: previously root
       MYSQL_DB: devops
     depends_on:
       - mysql
@@ -46,3 +47,4 @@ services:
 
 networks:
   twotier:
+
